@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoundWave - Player & Cadastro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="main-container">
+
+    <!-- LADO ESQUERDO: Formulário para cadastrar novas músicas -->
+    <section class="card form-card">
+      <h2>➕ Cadastrar Música</h2>
+      <form id="song-form">
+        <div class="input-group">
+          <label for="input-title">Título da Música</label>
+          <input type="text" id="input-title" placeholder="Ex: Nome da Música" required>
+        </div>
+
+        <div class="input-group">
+          <label for="input-artist">Artista / Banda</label>
+          <input type="text" id="input-artist" placeholder="Ex: Nome do Artista" required>
+        </div>
+
+        <!-- Ficheiro de Áudio com Botão Personalizado -->
+        <div class="input-group">
+          <label>Ficheiro de Áudio (.mp3)</label>
+          <label for="input-audio" class="file-upload-btn">
+            <span id="audio-filename">🎵 Clique para selecionar o áudio</span>
+          </label>
+          <input type="file" id="input-audio" accept="audio/*" class="hidden-input">
+          
+          <small>Ou indique o caminho local do ficheiro:</small>
+          <input type="text" id="input-audio-path" placeholder="Ex: musicas/minha-musica.mp3">
+        </div>
+
+        <!-- Capa do Álbum com Botão Personalizado -->
+        <div class="input-group">
+          <label>Capa do Álbum (Imagem)</label>
+          <label for="input-cover" class="file-upload-btn">
+            <span id="cover-filename">🖼️ Clique para selecionar a capa</span>
+          </label>
+          <input type="file" id="input-cover" accept="image/*" class="hidden-input">
+        </div>
+
+        <button type="submit" class="btn-submit">Adicionar à Lista</button>
+      </form>
+    </section>
+
+    <!-- LADO DIREITO: Player de Áudio & Playlist -->
+    <section class="card player-card">
+      
+      <!-- Detalhes da música atual -->
+      <div class="player-header">
+        <img id="cover" src="" alt="Capa da Música">
+        <h2 id="song-title">Título da Música</h2>
+        <p id="artist-name">Nome do Artista</p>
+      </div>
+
+      <!-- Tag de áudio (invisível) -->
+      <audio id="audio-player"></audio>
+
+      <!-- Barra de Progresso do Áudio -->
+      <div class="progress-container">
+        <span id="current-time">0:00</span>
+        <input type="range" id="progress-bar" value="0" max="100">
+        <span id="duration-time">0:00</span>
+      </div>
+
+      <!-- Botões de Controle Principal -->
+      <div class="controls">
+        <button id="prev-btn" class="btn-ctrl">⏮</button>
+        <button id="play-btn" class="btn-ctrl play-main">▶</button>
+        <button id="next-btn" class="btn-ctrl">⏭</button>
+      </div>
+
+      <!-- Mixer de Volume -->
+      <div class="volume-container">
+        <span id="volume-icon">🔊</span>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+      </div>
+
+      <!-- Lista Visual de Músicas -->
+      <div class="playlist-section">
+        <h3>Minha Playlist</h3>
+        <ul id="playlist-list"></ul>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
