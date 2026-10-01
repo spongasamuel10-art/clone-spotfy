@@ -357,3 +357,42 @@ li.active {
   font-size: 0.85rem;
   color: #a0c0c8;
 }
+/* =========================================================
+   CORREÇÃO DA PLAYLIST E BARRA DE ROLAGEM
+   ========================================================= */
+
+/* 1. Contentor exterior (garante que nada sai dos cantos arredondados) */
+.playlist-card,
+.playlist-container {
+  overflow: hidden; /* Corta qualquer elemento que saia dos cantos */
+  border-radius: 12px;
+}
+
+/* 2. Lista com rolagem interna */
+#playlist,
+.playlist-list,
+ul {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* 3. Barra de rolagem ajustada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  margin: 6px 0; /* Margem para a barra não encostar nas extremidades */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00bcbe;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00e5e8;
+}
