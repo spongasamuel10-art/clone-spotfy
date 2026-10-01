@@ -12,69 +12,90 @@ const durationTimeEl = document.getElementById('duration-time');
 const playlistList = document.getElementById('playlist-list');
 const songForm = document.getElementById('song-form');
 
-// Elementos do Mixer de Volume
-const volumeSlider = document.getElementById('volume-slider');
-const volumeIcon = document.getElementById('volume-icon');
-
-// 2. PLAYLIST INICIAL
-const playlist = [
-  {
-    title: 'Arrependidaço',
-    artist: 'Artista 1',
-    file: 'musicas/arrependidaco.mp3',
-    cover: 'https://picsum.photos/id/10/250'
-  },
-  {
-    title: 'Até Que Durou',
-    artist: 'Artista 2',
-    file: 'musicas/ate-que-durou.mp3',
-    cover: 'https://picsum.photos/id/20/250'
-  },
-  {
-    title: 'Menos é Mais',
-    artist: 'Artista 3',
-    file: 'musicas/menos-e-mais.mp3',
-    cover: 'https://picsum.photos/id/30/250'
-  }
-];
-
+// 2. VARIÁVEIS DE ESTADO
+let playlist = [];
 let indexAtual = 0;
+let primeiraCarga = true;
 
-// 3. CARREGAR A MÚSICA NA TELA
+// FUNÇÃO PARA CONVERTER QUALQUER ARQUIVO EM STRING (BASE64 / DATA URL)
+function fileToString(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result); // Retorna 'data:audio/mp3;base64,...'
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+// 3. BUSCAR MÚSICAS EM TEMPO REAL NO REALTIME DATABASE
+database.ref('musicas').on('value', (snapshot) => {
+  playlist = [];
+
+  snapshot.forEach((childSnapshot) => {
+    playlist.push({
+      id: childSnapshot.key,
+      ...childSnapshot.val()
+    });
+  });
+
+  renderizarPlaylist();
+
+  if (playlist.length > 0 && primeiraCarga) {
+    indexAtual = 0;
+    carregarMusica(indexAtual);
+    primeiraCarga = false;
+  } else if (playlist.length === 0) {
+    songTitle.textContent = 'Nenhuma música';
+    artistName.textContent = 'Cadastre uma música ao lado';
+    cover.src = 'https://picsum.photos/id/100/250';
+    audio.src = '';
+  }
+}, (error) => {
+  console.error("Erro ao carregar do Realtime Database:", error);
+  playlistList.innerHTML = '<li style="color: #ef4444; justify-content: center;">Erro ao carregar músicas!</li>';
+});
+
+// 4. CARREGAR A MÚSICA SELECIONADA NA TELA
 function carregarMusica(posicao) {
   if (playlist.length === 0) return;
 
   const musica = playlist[posicao];
   songTitle.textContent = musica.title;
   artistName.textContent = musica.artist;
-  audio.src = musica.file;
-  cover.src = musica.cover;
+  audio.src = musica.file; // A string Base64 é atribuída diretamente aqui!
+  cover.src = musica.cover || 'https://picsum.photos/id/100/250';
   
   destacarMusicaAtiva();
 }
 
-// 4. PLAY / PAUSE
+// 5. ALTERNAR PLAY E PAUSE
 function alternarPlay() {
-  if (playlist.length === 0) return;
+  if (playlist.length === 0 || !audio.src) {
+    alert("Nenhuma música válida selecionada!");
+    return;
+  }
 
   if (audio.paused) {
-    audio.play();
-    playBtn.textContent = '⏸';
+    audio.play().then(() => {
+      playBtn.textContent = '⏸';
+    }).catch(err => {
+      console.error("Erro ao tocar áudio:", err);
+      alert("Não foi possível reproduzir este áudio.");
+    });
   } else {
     audio.pause();
     playBtn.textContent = '▶';
   }
 }
 
-// 5. NAVEGAÇÃO
+// 6. NAVEGAÇÃO ENTRE MÚSICAS
 function musicaAnterior() {
   if (playlist.length === 0) return;
 
   indexAtual--;
   if (indexAtual < 0) indexAtual = playlist.length - 1;
   carregarMusica(indexAtual);
-  audio.play();
-  playBtn.textContent = '⏸';
+  audio.play().then(() => playBtn.textContent = '⏸').catch(() => {});
 }
 
 function proximaMusica() {
@@ -83,83 +104,26 @@ function proximaMusica() {
   indexAtual++;
   if (indexAtual >= playlist.length) indexAtual = 0;
   carregarMusica(indexAtual);
-  audio.play();
-  playBtn.textContent = '⏸';
+  audio.play().then(() => playBtn.textContent = '⏸').catch(() => {});
 }
 
-// 6. CONTROLADOR DE MIXER DE VOLUME
-volumeSlider.addEventListener('input', (e) => {
-  const valorVolume = e.target.value;
-  audio.volume = valorVolume;
-
-  if (valorVolume == 0) {
-    volumeIcon.textContent = '🔇';
-  } else if (valorVolume < 0.5) {
-    volumeIcon.textContent = '🔉';
-  } else {
-    volumeIcon.textContent = '🔊';
-  }
-});
-
-// 7. EXCLUIR MÚSICA DA PLAYLIST
-function excluirMusica(indexParaExcluir) {
-  playlist.splice(indexParaExcluir, 1);
-
-  if (playlist.length === 0) {
-    audio.pause();
-    audio.src = '';
-    songTitle.textContent = 'Nenhuma música';
-    artistName.textContent = '-';
-    cover.src = 'https://picsum.photos/id/100/250';
-    playBtn.textContent = '▶';
-    renderizarPlaylist();
-    return;
-  }
-
-  if (indexParaExcluir === indexAtual) {
-    if (indexAtual >= playlist.length) {
-      indexAtual = playlist.length - 1;
-    }
-    carregarMusica(indexAtual);
-    audio.play();
-    playBtn.textContent = '⏸';
-  } else if (indexParaExcluir < indexAtual) {
-    indexAtual--;
-  }
-
-  renderizarPlaylist();
-}
-
-// 8. RENDERIZAR PLAYLIST NA INTERFACE
+// 7. RENDERIZAR A PLAYLIST NA INTERFACE
 function renderizarPlaylist() {
   playlistList.innerHTML = '';
 
   if (playlist.length === 0) {
-    playlistList.innerHTML = '<li class="empty-msg">Sua playlist está vazia</li>';
+    playlistList.innerHTML = '<li style="justify-content: center; color: var(--text-muted);">Sua playlist está vazia</li>';
     return;
   }
 
   playlist.forEach((musica, index) => {
     const li = document.createElement('li');
-    li.innerHTML = `
-      <div class="song-info">
-        <span>${musica.title}</span>
-        <small style="color: var(--text-secondary);">${musica.artist}</small>
-      </div>
-      <button class="btn-delete" title="Excluir música">🗑</button>
-    `;
+    li.innerHTML = `<span>${musica.title}</span> <span>${musica.artist}</span>`;
     
     li.addEventListener('click', () => {
       indexAtual = index;
       carregarMusica(indexAtual);
-      audio.play();
-      playBtn.textContent = '⏸';
-    });
-
-    const btnDelete = li.querySelector('.btn-delete');
-    btnDelete.addEventListener('click', (e) => {
-      e.stopPropagation();
-      excluirMusica(index);
+      audio.play().then(() => playBtn.textContent = '⏸').catch(() => {});
     });
 
     playlistList.appendChild(li);
@@ -179,7 +143,7 @@ function destacarMusicaAtiva() {
   });
 }
 
-// 9. ATUALIZAR TEMPO E BARRA DE PROGRESSO
+// 8. BARRA DE PROGRESSO DO ÁUDIO
 audio.addEventListener('timeupdate', () => {
   if (audio.duration) {
     const progresso = (audio.currentTime / audio.duration) * 100;
@@ -204,50 +168,79 @@ progressBar.addEventListener('input', () => {
   }
 });
 
-// 10. FORMULÁRIO DE CADASTRO
-songForm.addEventListener('submit', (event) => {
+// 9. CADASTRO DE MÚSICA CONVERTENDO ARQUIVOS PARA STRING (BASE64)
+songForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
-  const titulo = document.getElementById('input-title').value;
-  const artista = document.getElementById('input-artist').value;
-  const audioFileInput = document.getElementById('input-audio');
-  const audioPathInput = document.getElementById('input-audio-path').value;
-  const coverFileInput = document.getElementById('input-cover');
+  const submitBtn = songForm.querySelector('.btn-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Convertendo e salvando...';
 
-  let caminhoAudio = '';
-  if (audioFileInput.files.length > 0) {
-    caminhoAudio = URL.createObjectURL(audioFileInput.files[0]);
-  } else if (audioPathInput.trim() !== '') {
-    caminhoAudio = audioPathInput.trim();
-  } else {
-    alert('Por favor, selecione um arquivo de áudio ou digite o caminho!');
-    return;
-  }
+  try {
+    const titulo = document.getElementById('input-title').value;
+    const artista = document.getElementById('input-artist').value;
+    const audioFileInput = document.getElementById('input-audio');
+    const audioPathInput = document.getElementById('input-audio-path').value;
+    const coverFileInput = document.getElementById('input-cover');
 
-  let caminhoCapa = 'https://picsum.photos/id/100/250';
-  if (coverFileInput.files.length > 0) {
-    caminhoCapa = URL.createObjectURL(coverFileInput.files[0]);
-  }
+    let caminhoAudio = '';
+    let caminhoCapa = 'https://picsum.photos/id/100/250';
 
-  playlist.push({
-    title: titulo,
-    artist: artista,
-    file: caminhoAudio,
-    cover: caminhoCapa
-  });
+    // A) SE SELECIONOU UM ARQUIVO MP3 DO COMPUTADOR:
+    if (audioFileInput.files.length > 0) {
+      const file = audioFileInput.files[0];
 
-  renderizarPlaylist();
-  songForm.reset();
-  document.getElementById('audio-filename').textContent = '🎵 Clique para selecionar o áudio';
-  document.getElementById('cover-filename').textContent = '🖼️ Clique para selecionar a capa';
+      // O Realtime Database aceita nós de até 10MB. 
+      // É recomendado escolher arquivos MP3 de até 8MB~10MB.
+      if (file.size > 10 * 1024 * 1024) {
+        alert('O arquivo MP3 é muito grande! Escolha um arquivo com menos de 10MB.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Adicionar ao Firebase';
+        return;
+      }
 
-  if (playlist.length === 1) {
-    indexAtual = 0;
-    carregarMusica(indexAtual);
+      // Converte o MP3 em STRING
+      caminhoAudio = await fileToString(file);
+
+    } else if (audioPathInput.trim() !== '') {
+      // Se digitou um link URL
+      caminhoAudio = audioPathInput.trim();
+    } else {
+      alert('Por favor, selecione um arquivo MP3 ou digite um link!');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Adicionar ao Firebase';
+      return;
+    }
+
+    // B) SE SELECIONOU UMA IMAGEM DE CAPA:
+    if (coverFileInput && coverFileInput.files.length > 0) {
+      caminhoCapa = await fileToString(coverFileInput.files[0]);
+    }
+
+    // C) SALVA A STRING DIRETAMENTE NO REALTIME DATABASE
+    await database.ref('musicas').push({
+      title: titulo,
+      artist: artista,
+      file: caminhoAudio,
+      cover: caminhoCapa,
+      createdAt: Date.now()
+    });
+
+    alert('Música cadastrada com sucesso!');
+    songForm.reset();
+    document.getElementById('audio-filename').textContent = '🎵 Clique para selecionar o áudio';
+    document.getElementById('cover-filename').textContent = '🖼️ Clique para selecionar a capa';
+
+  } catch (error) {
+    console.error('Erro ao converter ou salvar no Firebase:', error);
+    alert('Erro ao converter ou salvar a música.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Adicionar ao Firebase';
   }
 });
 
-// 11. MANIPULAÇÃO DE INPUTS DE ARQUIVO
+// 10. ATUALIZAR NOMES DOS ARQUIVOS NOS BOTÕES DO FORMULÁRIO
 document.getElementById('input-audio').addEventListener('change', function(e) {
   const fileName = e.target.files[0] ? e.target.files[0].name : '🎵 Clique para selecionar o áudio';
   document.getElementById('audio-filename').textContent = fileName;
@@ -258,12 +251,8 @@ document.getElementById('input-cover').addEventListener('change', function(e) {
   document.getElementById('cover-filename').textContent = fileName;
 });
 
-// 12. LISTENERS DOS CONTROLES
+// 11. CONTROLES
 playBtn.addEventListener('click', alternarPlay);
 prevBtn.addEventListener('click', musicaAnterior);
 nextBtn.addEventListener('click', proximaMusica);
 audio.addEventListener('ended', proximaMusica);
-
-// INICIALIZAÇÃO
-carregarMusica(indexAtual);
-renderizarPlaylist();

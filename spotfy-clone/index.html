@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SoundWave - Player & Cadastro</title>
+  <title>SoundWave - Player & Realtime Database</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- SDKs do Firebase (App e Realtime Database) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -12,7 +16,7 @@
 
     <!-- LADO ESQUERDO: Formulário para cadastrar novas músicas -->
     <section class="card form-card">
-      <h2>➕ Cadastrar Música</h2>
+      <h2>➕ Cadastrar Música (Firebase)</h2>
       <form id="song-form">
         <div class="input-group">
           <label for="input-title">Título da Música</label>
@@ -24,7 +28,7 @@
           <input type="text" id="input-artist" placeholder="Ex: Nome do Artista" required>
         </div>
 
-        <!-- Ficheiro de Áudio com Botão Personalizado -->
+        <!-- Ficheiro ou Link de Áudio -->
         <div class="input-group">
           <label>Ficheiro de Áudio (.mp3)</label>
           <label for="input-audio" class="file-upload-btn">
@@ -32,11 +36,11 @@
           </label>
           <input type="file" id="input-audio" accept="audio/*" class="hidden-input">
           
-          <small>Ou indique o caminho local do ficheiro:</small>
-          <input type="text" id="input-audio-path" placeholder="Ex: musicas/minha-musica.mp3">
+          <small style="display: block; margin-top: 8px; color: var(--text-muted);">Ou indique um link / caminho da música:</small>
+          <input type="text" id="input-audio-path" placeholder="Ex: https://link-da-musica.mp3 ou musicas/minha_musica.mp3">
         </div>
 
-        <!-- Capa do Álbum com Botão Personalizado -->
+        <!-- Capa do Álbum -->
         <div class="input-group">
           <label>Capa do Álbum (Imagem)</label>
           <label for="input-cover" class="file-upload-btn">
@@ -45,7 +49,7 @@
           <input type="file" id="input-cover" accept="image/*" class="hidden-input">
         </div>
 
-        <button type="submit" class="btn-submit">Adicionar à Lista</button>
+        <button type="submit" class="btn-submit">Adicionar ao Firebase</button>
       </form>
     </section>
 
@@ -54,9 +58,9 @@
       
       <!-- Detalhes da música atual -->
       <div class="player-header">
-        <img id="cover" src="" alt="Capa da Música">
-        <h2 id="song-title">Título da Música</h2>
-        <p id="artist-name">Nome do Artista</p>
+        <img id="cover" src="https://picsum.photos/id/100/250" alt="Capa da Música">
+        <h2 id="song-title">Carregando...</h2>
+        <p id="artist-name">-</p>
       </div>
 
       <!-- Tag de áudio (invisível) -->
@@ -69,29 +73,27 @@
         <span id="duration-time">0:00</span>
       </div>
 
-      <!-- Botões de Controle Principal -->
+      <!-- Botões de Controle -->
       <div class="controls">
         <button id="prev-btn" class="btn-ctrl">⏮</button>
         <button id="play-btn" class="btn-ctrl play-main">▶</button>
         <button id="next-btn" class="btn-ctrl">⏭</button>
       </div>
 
-      <!-- Mixer de Volume -->
-      <div class="volume-container">
-        <span id="volume-icon">🔊</span>
-        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-      </div>
-
-      <!-- Lista Visual de Músicas -->
+      <!-- Lista Visual de Músicas do Firebase -->
       <div class="playlist-section">
         <h3>Minha Playlist</h3>
-        <ul id="playlist-list"></ul>
+        <ul id="playlist-list">
+          <li style="justify-content: center; color: var(--text-muted);">Buscando músicas do Realtime Database...</li>
+        </ul>
       </div>
 
     </section>
 
   </div>
 
+  <!-- Carregamento dos ficheiros JS (na ordem correta) -->
+  <script src="firebase.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -1,28 +1,22 @@
 /* =========================================================
-   VARIÁVEIS DE CORES (:root)
-   Altere aqui para mudar o tema de todo o site facilmente!
+   VARIÁVEIS DE CORES (:root) - Tema Ciano Neon / Verde Oceano
    ========================================================= */
 :root {
-  /* Fundo da tela em gradiente escuro */
   --bg-gradient-1: #06141d;
   --bg-gradient-2: #0b2535;
   --bg-gradient-3: #123c40;
 
-  /* Cartões com efeito de vidro (Glassmorphism) */
   --card-bg: rgba(255, 255, 255, 0.04);
   --card-border: rgba(255, 255, 255, 0.1);
 
-  /* Cores de destaque (Neon Ciano e Verde) */
-  --primary-color: #00f2fe;   /* Ciano brilhante para títulos e destaques */
-  --secondary-color: #4facfe; /* Azul para botões */
-  --accent-color: #10b981;    /* Verde esmeralda para detalhes */
+  --primary-color: #00f2fe;   
+  --secondary-color: #4facfe; 
+  --accent-color: #10b981;    
 
-  /* Cores de texto */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  /* Item selecionado na playlist */
   --playlist-active-bg: rgba(0, 242, 254, 0.15);
 }
 
@@ -57,7 +51,7 @@ body {
   }
 }
 
-/* Cartões com efeito de Vidro (Glassmorphism) */
+/* Cartões Glassmorphism */
 .card {
   background: var(--card-bg);
   backdrop-filter: blur(16px);
@@ -87,8 +81,7 @@ body {
   color: var(--text-secondary);
 }
 
-.input-group input[type="text"],
-.input-group input[type="file"] {
+.input-group input[type="text"] {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--card-border);
   padding: 10px;
@@ -108,6 +101,42 @@ body {
   margin: 6px 0 4px 0;
 }
 
+/* Oculta input nativo de arquivo */
+.hidden-input {
+  display: none;
+}
+
+/* Botão de Upload Personalizado */
+.file-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed var(--primary-color);
+  padding: 12px 15px;
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  user-select: none;
+}
+
+.file-upload-btn:hover {
+  background: rgba(0, 242, 254, 0.12);
+  border-style: solid;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+  transform: translateY(-1px);
+}
+
+.file-upload-btn span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 .btn-submit {
   width: 100%;
   padding: 12px;
@@ -124,6 +153,12 @@ body {
 .btn-submit:hover {
   opacity: 0.9;
   transform: translateY(-2px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* Player */
