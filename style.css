@@ -267,3 +267,93 @@ body {
   border-left: 3px solid var(--primary-color);
   font-weight: bold;
 }
+/* =========================================================
+   ESTILIZAÇÃO DA PLAYLIST E DA BARRA DE ROLAGEM
+   ========================================================= */
+
+/* 1. Barra de Rolagem Personalizada (Custom Scrollbar) */
+/* Aplica-se à caixa da playlist para remover a barra branca antiga */
+.playlist-container::-webkit-scrollbar,
+#playlist::-webkit-scrollbar,
+.playlist-list::-webkit-scrollbar,
+ul::-webkit-scrollbar {
+  width: 6px; /* Barra fina e discreta */
+}
+
+.playlist-container::-webkit-scrollbar-track,
+#playlist::-webkit-scrollbar-track,
+.playlist-list::-webkit-scrollbar-track,
+ul::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2); /* Fundo discreto */
+  border-radius: 10px;
+}
+
+.playlist-container::-webkit-scrollbar-thumb,
+#playlist::-webkit-scrollbar-thumb,
+.playlist-list::-webkit-scrollbar-thumb,
+ul::-webkit-scrollbar-thumb {
+  background: #00bcbe; /* Cor azul/ciano que combina com o seu tema */
+  border-radius: 10px;
+}
+
+.playlist-container::-webkit-scrollbar-thumb:hover,
+#playlist::-webkit-scrollbar-thumb:hover,
+.playlist-list::-webkit-scrollbar-thumb:hover,
+ul::-webkit-scrollbar-thumb:hover {
+  background: #00e5e8; /* Brilho suave ao passar o rato */
+}
+
+/* 2. Contentor da Playlist */
+.playlist-container, 
+#playlist, 
+.playlist-list {
+  max-height: 220px; /* Limite de altura com rolagem */
+  overflow-y: auto;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 3. Estilo dos Itens da Música */
+.playlist-item, 
+.song-item,
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efeito ao passar o rato (Hover) */
+.playlist-item:hover, 
+.song-item:hover,
+li:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(3px); /* Deslize suave */
+}
+
+/* Música Selecionada / A Tocar (Active) */
+.playlist-item.active, 
+.song-item.active,
+li.active {
+  background-color: rgba(0, 188, 190, 0.15);
+  border: 1px solid #00bcbe; /* Borda em azul/ciano */
+  box-shadow: 0 0 10px rgba(0, 188, 190, 0.2);
+}
+
+/* Texto do Título e Artista */
+.song-title {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.song-artist {
+  font-size: 0.85rem;
+  color: #a0c0c8;
+}
