@@ -3,96 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SoundWave - Player & Realtime Database</title>
+  <title>Music Player - Pro</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- SDKs do Firebase (App e Realtime Database) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
+  <!-- ELEMENTO DE ÁUDIO OCULTO -->
+  <audio id="audio-player"></audio>
+
+  <!-- CONTAINER PRINCIPAL (MAIOR ESCALA E ORDEM INVERTIDA) -->
   <div class="main-container">
 
-    <!-- LADO ESQUERDO: Formulário para cadastrar novas músicas -->
-    <section class="card form-card">
-      <h2>➕ Cadastrar Música (Firebase)</h2>
-      <form id="song-form">
-        <div class="input-group">
-          <label for="input-title">Título da Música</label>
-          <input type="text" id="input-title" placeholder="Ex: Nome da Música" required>
-        </div>
-
-        <div class="input-group">
-          <label for="input-artist">Artista / Banda</label>
-          <input type="text" id="input-artist" placeholder="Ex: Nome do Artista" required>
-        </div>
-
-        <!-- Ficheiro ou Link de Áudio -->
-        <div class="input-group">
-          <label>Ficheiro de Áudio (.mp3)</label>
-          <label for="input-audio" class="file-upload-btn">
-            <span id="audio-filename">🎵 Clique para selecionar o áudio</span>
-          </label>
-          <input type="file" id="input-audio" accept="audio/*" class="hidden-input">
-          
-          <small style="display: block; margin-top: 8px; color: var(--text-muted);">Ou indique um link / caminho da música:</small>
-          <input type="text" id="input-audio-path" placeholder="Ex: https://link-da-musica.mp3 ou musicas/minha_musica.mp3">
-        </div>
-
-        <!-- Capa do Álbum -->
-        <div class="input-group">
-          <label>Capa do Álbum (Imagem)</label>
-          <label for="input-cover" class="file-upload-btn">
-            <span id="cover-filename">🖼️ Clique para selecionar a capa</span>
-          </label>
-          <input type="file" id="input-cover" accept="image/*" class="hidden-input">
-        </div>
-
-        <button type="submit" class="btn-submit">Adicionar ao Firebase</button>
-      </form>
-    </section>
-
-    <!-- LADO DIREITO: Player de Áudio & Playlist -->
-    <section class="card player-card">
-      
-      <!-- Detalhes da música atual -->
-      <div class="player-header">
-        <img id="cover" src="https://picsum.photos/id/100/250" alt="Capa da Música">
-        <h2 id="song-title">Carregando...</h2>
-        <p id="artist-name">-</p>
+    <!-- ========================================== -->
+    <!-- DIV 1 (ESQUERDA): BIBLIOTECA DE MÚSICAS    -->
+    <!-- ========================================== -->
+    <div class="card library-card">
+      <div class="library-header">
+        <h2>🎵 Músicas Adicionadas</h2>
+        <span id="song-count" class="song-count">0 músicas</span>
       </div>
 
-      <!-- Tag de áudio (invisível) -->
-      <audio id="audio-player"></audio>
+      <div class="library-list-container">
+        <ul id="playlist-list"></ul>
+      </div>
+    </div>
 
-      <!-- Barra de Progresso do Áudio -->
+    <!-- ========================================== -->
+    <!-- DIV 2 (DIREITA): PLAYER DE MÚSICA          -->
+    <!-- ========================================== -->
+    <div class="card player-card">
+
+      <!-- BOTÃO E FORMULÁRIO NO CANTO SUPERIOR DIREITO -->
+      <div class="add-song-corner">
+        <details>
+          <summary class="btn-add-toggle">➕ Add Música</summary>
+          
+          <form id="song-form" class="form-popover">
+            <h2>Cadastrar Música</h2>
+
+            <div class="input-group">
+              <label for="input-title">Título</label>
+              <input type="text" id="input-title" placeholder="Nome da música" required>
+            </div>
+
+            <div class="input-group">
+              <label for="input-artist">Artista</label>
+              <input type="text" id="input-artist" placeholder="Nome do artista" required>
+            </div>
+
+            <div class="input-group">
+              <label for="input-audio-path">Link de Áudio (URL Opcional)</label>
+              <input type="text" id="input-audio-path" placeholder="https://...">
+              <small>Ou selecione um arquivo MP3 abaixo:</small>
+            </div>
+
+            <div class="input-group">
+              <input type="file" id="input-audio" class="hidden-input" accept="audio/*">
+              <label for="input-audio" class="file-upload-btn">
+                <span id="audio-filename">🎵 Selecionar áudio</span>
+              </label>
+            </div>
+
+            <div class="input-group">
+              <input type="file" id="input-cover" class="hidden-input" accept="image/*">
+              <label for="input-cover" class="file-upload-btn">
+                <span id="cover-filename">🖼️ Selecionar capa</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-submit">Adicionar ao Firebase</button>
+          </form>
+        </details>
+      </div>
+
+      <!-- INTERFACE DE PLAY/PAUSE -->
+      <div class="player-header">
+        <img id="cover" src="https://picsum.photos/id/100/250" alt="Capa da música">
+        <h2 id="song-title">Nenhuma música</h2>
+        <p id="artist-name">Cadastre uma música no topo</p>
+      </div>
+
+      <!-- BARRA DE PROGRESSO -->
       <div class="progress-container">
         <span id="current-time">0:00</span>
-        <input type="range" id="progress-bar" value="0" max="100">
+        <input type="range" id="progress-bar" value="0" min="0" max="100">
         <span id="duration-time">0:00</span>
       </div>
 
-      <!-- Botões de Controle -->
+      <!-- CONTROLES -->
       <div class="controls">
         <button id="prev-btn" class="btn-ctrl">⏮</button>
         <button id="play-btn" class="btn-ctrl play-main">▶</button>
         <button id="next-btn" class="btn-ctrl">⏭</button>
       </div>
 
-      <!-- Lista Visual de Músicas do Firebase -->
-      <div class="playlist-section">
-        <h3>Minha Playlist</h3>
-        <ul id="playlist-list">
-          <li style="justify-content: center; color: var(--text-muted);">Buscando músicas do Realtime Database...</li>
-        </ul>
-      </div>
-
-    </section>
+    </div>
 
   </div>
 
-  <!-- Carregamento dos ficheiros JS (na ordem correta) -->
+  <!-- FIREBASE SCRIPTS -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="firebase.js"></script>
   <script src="script.js"></script>
 </body>

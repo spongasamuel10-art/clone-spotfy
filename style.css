@@ -1,72 +1,210 @@
 /* =========================================================
-   VARIÁVEIS DE CORES (:root) - Tema Ciano Neon / Verde Oceano
+   VARIÁVEIS DE CORES - Tema Profissional Dark Slate & Cyan Accent
    ========================================================= */
 :root {
-  --bg-gradient-1: #06141d;
-  --bg-gradient-2: #0b2535;
-  --bg-gradient-3: #123c40;
+  --bg-dark-1: #0b0f17;
+  --bg-dark-2: #111827;
+  --bg-dark-3: #1e293b;
 
-  --card-bg: rgba(255, 255, 255, 0.04);
-  --card-border: rgba(255, 255, 255, 0.1);
+  --card-bg: rgba(17, 24, 39, 0.75);
+  --card-border: rgba(255, 255, 255, 0.08);
 
-  --primary-color: #00f2fe;   
-  --secondary-color: #4facfe; 
-  --accent-color: #10b981;    
+  --primary-color: #38bdf8;    /* Ciano Slate suave */
+  --secondary-color: #0284c7;  /* Azul Profundo */
+  --accent-color: #10b981;     /* Verde Esmeralda Discreto */
 
-  --text-primary: #f1f5f9;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  --playlist-active-bg: rgba(0, 242, 254, 0.15);
+  --playlist-active-bg: rgba(56, 189, 248, 0.12);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 50%, var(--bg-gradient-3) 100%);
+  background: radial-gradient(circle at top, var(--bg-dark-3) 0%, var(--bg-dark-2) 50%, var(--bg-dark-1) 100%);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 30px;
   color: var(--text-primary);
 }
 
+/* CONTAINER PRINCIPAL (AMPLIADO DE 900px PARA 1080px) */
 .main-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 25px;
-  max-width: 900px;
+  gap: 30px;
+  max-width: 1080px;
   width: 100%;
+  align-items: stretch;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .main-container {
     grid-template-columns: 1fr;
   }
 }
 
-/* Cartões Glassmorphism */
+/* CARDS GLASSMORPHISM SOBRIOS */
 .card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--card-border);
-  border-radius: 20px;
-  padding: 25px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
 }
 
-/* Formulário de Cadastro */
-.form-card h2 {
-  margin-bottom: 18px;
-  font-size: 1.3rem;
+/* ---------------------------------------------------------
+   DIV 1: BIBLIOTECA DE MÚSICAS (ESQUERDA)
+   --------------------------------------------------------- */
+.library-card {
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 14px;
+}
+
+.library-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.song-count {
+  font-size: 0.8rem;
+  background: rgba(56, 189, 248, 0.1);
   color: var(--primary-color);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  font-weight: 500;
+}
+
+.library-list-container {
+  flex: 1;
+}
+
+#playlist-list {
+  list-style: none;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+#playlist-list li {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#playlist-list li:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+#playlist-list li.active {
+  background: var(--playlist-active-bg);
+  border: 1px solid var(--primary-color);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.15);
+  font-weight: 600;
+}
+
+.song-title {
+  color: var(--text-primary);
+}
+
+.song-artist {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------------
+   DIV 2: PLAYER CARD (DIREITA)
+   --------------------------------------------------------- */
+.player-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* BOTÃO DE ADICIONAR MÚSICA (POPOVER) */
+.add-song-corner {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  z-index: 100;
+}
+
+.btn-add-toggle {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-add-toggle:hover,
+.add-song-corner details[open] .btn-add-toggle {
+  background: var(--primary-color);
+  color: #090d16;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+/* FORMULÁRIO POPOVER */
+.form-popover {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  width: 320px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 22px;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-popover h2 {
+  font-size: 1.15rem;
+  color: var(--primary-color);
+  margin-bottom: 14px;
 }
 
 .input-group {
@@ -76,18 +214,19 @@ body {
 }
 
 .input-group label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   margin-bottom: 6px;
   color: var(--text-secondary);
 }
 
 .input-group input[type="text"] {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--card-border);
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   color: var(--text-primary);
   outline: none;
+  font-size: 0.88rem;
   transition: border-color 0.2s;
 }
 
@@ -98,101 +237,86 @@ body {
 .input-group small {
   color: var(--text-muted);
   font-size: 0.75rem;
-  margin: 6px 0 4px 0;
+  margin: 6px 0 2px 0;
 }
 
-/* Oculta input nativo de arquivo */
 .hidden-input {
   display: none;
 }
 
-/* Botão de Upload Personalizado */
 .file-upload-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px dashed var(--primary-color);
-  padding: 12px 15px;
-  border-radius: 10px;
+  padding: 10px;
+  border-radius: 8px;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-align: center;
-  user-select: none;
 }
 
 .file-upload-btn:hover {
-  background: rgba(0, 242, 254, 0.12);
+  background: rgba(56, 189, 248, 0.1);
   border-style: solid;
-  box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
-  transform: translateY(-1px);
-}
-
-.file-upload-btn span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 
 .btn-submit {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   border: none;
   border-radius: 10px;
-  color: #000;
-  font-weight: bold;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: transform 0.2s, opacity 0.2s;
-  margin-top: 10px;
+  transition: opacity 0.2s, transform 0.1s;
+  margin-top: 6px;
 }
 
 .btn-submit:hover {
-  opacity: 0.9;
-  transform: translateY(-2px);
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
-.btn-submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Player */
+/* PLAYER CENTRAL (AUMENTADO) */
 .player-header {
   text-align: center;
+  margin-top: 15px;
 }
 
 .player-header img {
-  width: 160px;
-  height: 160px;
+  width: 210px;
+  height: 210px;
   object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-  margin-bottom: 12px;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  margin-bottom: 18px;
 }
 
 .player-header h2 {
-  font-size: 1.2rem;
+  font-size: 1.35rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 .player-header p {
   color: var(--text-secondary);
-  font-size: 0.85rem;
-  margin-bottom: 15px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
 }
 
-/* Barra de Progresso */
+/* BARRA DE PROGRESSO */
 .progress-container {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  font-size: 0.75rem;
+  gap: 12px;
+  margin-bottom: 22px;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
@@ -202,182 +326,41 @@ body {
   cursor: pointer;
 }
 
-/* Botões de Controle */
+/* CONTROLES DE ÁUDIO */
 .controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 20px;
 }
 
 .btn-ctrl {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--card-border);
   color: var(--text-primary);
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
 }
 
 .btn-ctrl.play-main {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: #000;
-  font-size: 1.2rem;
+  width: 60px;
+  height: 60px;
+  background: var(--primary-color);
+  color: #0f172a;
+  font-size: 1.3rem;
   border: none;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
 }
 
 .btn-ctrl:hover {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
-/* Lista de Músicas */
-.playlist-section h3 {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-  color: var(--primary-color);
-}
-
-.playlist-section ul {
-  list-style: none;
-  max-height: 130px;
-  overflow-y: auto;
-}
-
-.playlist-section li {
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  margin-bottom: 6px;
-  font-size: 0.82rem;
-  display: flex;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: background 0.2s, border-left 0.2s;
-}
-
-.playlist-section li:hover,
-.playlist-section li.active {
-  background: var(--playlist-active-bg);
-  border-left: 3px solid var(--primary-color);
-  font-weight: bold;
-}
-/* =========================================================
-   ESTILIZAÇÃO DA PLAYLIST E DA BARRA DE ROLAGEM
-   ========================================================= */
-
-/* 1. Barra de Rolagem Personalizada (Custom Scrollbar) */
-/* Aplica-se à caixa da playlist para remover a barra branca antiga */
-.playlist-container::-webkit-scrollbar,
-#playlist::-webkit-scrollbar,
-.playlist-list::-webkit-scrollbar,
-ul::-webkit-scrollbar {
-  width: 6px; /* Barra fina e discreta */
-}
-
-.playlist-container::-webkit-scrollbar-track,
-#playlist::-webkit-scrollbar-track,
-.playlist-list::-webkit-scrollbar-track,
-ul::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2); /* Fundo discreto */
-  border-radius: 10px;
-}
-
-.playlist-container::-webkit-scrollbar-thumb,
-#playlist::-webkit-scrollbar-thumb,
-.playlist-list::-webkit-scrollbar-thumb,
-ul::-webkit-scrollbar-thumb {
-  background: #00bcbe; /* Cor azul/ciano que combina com o seu tema */
-  border-radius: 10px;
-}
-
-.playlist-container::-webkit-scrollbar-thumb:hover,
-#playlist::-webkit-scrollbar-thumb:hover,
-.playlist-list::-webkit-scrollbar-thumb:hover,
-ul::-webkit-scrollbar-thumb:hover {
-  background: #00e5e8; /* Brilho suave ao passar o rato */
-}
-
-/* 2. Contentor da Playlist */
-.playlist-container, 
-#playlist, 
-.playlist-list {
-  max-height: 220px; /* Limite de altura com rolagem */
-  overflow-y: auto;
-  padding-right: 6px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* 3. Estilo dos Itens da Música */
-.playlist-item, 
-.song-item,
-li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 14px;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-}
-
-/* Efeito ao passar o rato (Hover) */
-.playlist-item:hover, 
-.song-item:hover,
-li:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  transform: translateX(3px); /* Deslize suave */
-}
-
-/* Música Selecionada / A Tocar (Active) */
-.playlist-item.active, 
-.song-item.active,
-li.active {
-  background-color: rgba(0, 188, 190, 0.15);
-  border: 1px solid #00bcbe; /* Borda em azul/ciano */
-  box-shadow: 0 0 10px rgba(0, 188, 190, 0.2);
-}
-
-/* Texto do Título e Artista */
-.song-title {
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.song-artist {
-  font-size: 0.85rem;
-  color: #a0c0c8;
-}
-/* =========================================================
-   CORREÇÃO DA PLAYLIST E BARRA DE ROLAGEM
-   ========================================================= */
-
-/* 1. Contentor exterior (garante que nada sai dos cantos arredondados) */
-.playlist-card,
-.playlist-container {
-  overflow: hidden; /* Corta qualquer elemento que saia dos cantos */
-  border-radius: 12px;
-}
-
-/* 2. Lista com rolagem interna */
-#playlist,
-.playlist-list,
-ul {
-  max-height: 200px;
-  overflow-y: auto;
-  padding-right: 6px;
-}
-
-/* 3. Barra de rolagem ajustada */
+/* BARRA DE ROLAGEM PERSONALIZADA */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -385,14 +368,13 @@ ul {
 ::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
-  margin: 6px 0; /* Margem para a barra não encostar nas extremidades */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00bcbe;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00e5e8;
+  background: var(--primary-color);
 }

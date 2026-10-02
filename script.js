@@ -11,6 +11,7 @@ const currentTimeEl = document.getElementById('current-time');
 const durationTimeEl = document.getElementById('duration-time');
 const playlistList = document.getElementById('playlist-list');
 const songForm = document.getElementById('song-form');
+const songCountEl = document.getElementById('song-count');
 
 // 2. VARIÁVEIS DE ESTADO
 let playlist = [];
@@ -21,7 +22,7 @@ let primeiraCarga = true;
 function fileToString(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result); // Retorna 'data:audio/mp3;base64,...'
+    reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
   });
@@ -46,7 +47,7 @@ database.ref('musicas').on('value', (snapshot) => {
     primeiraCarga = false;
   } else if (playlist.length === 0) {
     songTitle.textContent = 'Nenhuma música';
-    artistName.textContent = 'Cadastre uma música ao lado';
+    artistName.textContent = 'Cadastre uma música no topo';
     cover.src = 'https://picsum.photos/id/100/250';
     audio.src = '';
   }
@@ -55,14 +56,14 @@ database.ref('musicas').on('value', (snapshot) => {
   playlistList.innerHTML = '<li style="color: #ef4444; justify-content: center;">Erro ao carregar músicas!</li>';
 });
 
-// 4. CARREGAR A MÚSICA SELECIONADA NA TELA
+// 4. CARREGAR A MÚSICA SELECIONADA NA TELA DO PLAYER
 function carregarMusica(posicao) {
   if (playlist.length === 0) return;
 
   const musica = playlist[posicao];
   songTitle.textContent = musica.title;
   artistName.textContent = musica.artist;
-  audio.src = musica.file; // A string Base64 é atribuída diretamente aqui!
+  audio.src = musica.file;
   cover.src = musica.cover || 'https://picsum.photos/id/100/250';
   
   destacarMusicaAtiva();
@@ -107,18 +108,26 @@ function proximaMusica() {
   audio.play().then(() => playBtn.textContent = '⏸').catch(() => {});
 }
 
-// 7. RENDERIZAR A PLAYLIST NA INTERFACE
+// 7. RENDERIZAR A PLAYLIST NA NOVA DIV/CARD
 function renderizarPlaylist() {
   playlistList.innerHTML = '';
 
+  // Atualiza a contagem de músicas no cabeçalho da div
+  if (songCountEl) {
+    songCountEl.textContent = `${playlist.length} ${playlist.length === 1 ? 'música' : 'músicas'}`;
+  }
+
   if (playlist.length === 0) {
-    playlistList.innerHTML = '<li style="justify-content: center; color: var(--text-muted);">Sua playlist está vazia</li>';
+    playlistList.innerHTML = '<li style="justify-content: center; color: var(--text-muted);">Sua biblioteca está vazia</li>';
     return;
   }
 
   playlist.forEach((musica, index) => {
     const li = document.createElement('li');
-    li.innerHTML = `<span>${musica.title}</span> <span>${musica.artist}</span>`;
+    li.innerHTML = `
+      <span class="song-title">🎵 ${musica.title}</span> 
+      <span class="song-artist">${musica.artist}</span>
+    `;
     
     li.addEventListener('click', () => {
       indexAtual = index;
@@ -186,12 +195,9 @@ songForm.addEventListener('submit', async (event) => {
     let caminhoAudio = '';
     let caminhoCapa = 'https://picsum.photos/id/100/250';
 
-    // A) SE SELECIONOU UM ARQUIVO MP3 DO COMPUTADOR:
     if (audioFileInput.files.length > 0) {
       const file = audioFileInput.files[0];
 
-      // O Realtime Database aceita nós de até 10MB. 
-      // É recomendado escolher arquivos MP3 de até 8MB~10MB.
       if (file.size > 10 * 1024 * 1024) {
         alert('O arquivo MP3 é muito grande! Escolha um arquivo com menos de 10MB.');
         submitBtn.disabled = false;
@@ -199,11 +205,9 @@ songForm.addEventListener('submit', async (event) => {
         return;
       }
 
-      // Converte o MP3 em STRING
       caminhoAudio = await fileToString(file);
 
     } else if (audioPathInput.trim() !== '') {
-      // Se digitou um link URL
       caminhoAudio = audioPathInput.trim();
     } else {
       alert('Por favor, selecione um arquivo MP3 ou digite um link!');
@@ -212,12 +216,10 @@ songForm.addEventListener('submit', async (event) => {
       return;
     }
 
-    // B) SE SELECIONOU UMA IMAGEM DE CAPA:
     if (coverFileInput && coverFileInput.files.length > 0) {
       caminhoCapa = await fileToString(coverFileInput.files[0]);
     }
 
-    // C) SALVA A STRING DIRETAMENTE NO REALTIME DATABASE
     await database.ref('musicas').push({
       title: titulo,
       artist: artista,
@@ -228,8 +230,12 @@ songForm.addEventListener('submit', async (event) => {
 
     alert('Música cadastrada com sucesso!');
     songForm.reset();
-    document.getElementById('audio-filename').textContent = '🎵 Clique para selecionar o áudio';
-    document.getElementById('cover-filename').textContent = '🖼️ Clique para selecionar a capa';
+    document.getElementById('audio-filename').textContent = '🎵 Selecionar áudio';
+    document.getElementById('cover-filename').textContent = '🖼️ Selecionar capa';
+
+    // Fecha o formulário suspenso após salvar
+    const details = songForm.closest('details');
+    if (details) details.removeAttribute('open');
 
   } catch (error) {
     console.error('Erro ao converter ou salvar no Firebase:', error);
@@ -242,12 +248,12 @@ songForm.addEventListener('submit', async (event) => {
 
 // 10. ATUALIZAR NOMES DOS ARQUIVOS NOS BOTÕES DO FORMULÁRIO
 document.getElementById('input-audio').addEventListener('change', function(e) {
-  const fileName = e.target.files[0] ? e.target.files[0].name : '🎵 Clique para selecionar o áudio';
+  const fileName = e.target.files[0] ? e.target.files[0].name : '🎵 Selecionar áudio';
   document.getElementById('audio-filename').textContent = fileName;
 });
 
 document.getElementById('input-cover').addEventListener('change', function(e) {
-  const fileName = e.target.files[0] ? e.target.files[0].name : '🖼️ Clique para selecionar a capa';
+  const fileName = e.target.files[0] ? e.target.files[0].name : '🖼️ Selecionar capa';
   document.getElementById('cover-filename').textContent = fileName;
 });
 

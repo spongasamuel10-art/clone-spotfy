@@ -11,7 +11,8 @@ const firebaseConfig = {
 };
 
 // Inicialização do Firebase
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-// Apenas o Realtime Database (Sem Storage)
 const database = firebase.database();
