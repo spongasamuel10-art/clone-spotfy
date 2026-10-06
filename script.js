@@ -262,3 +262,18 @@ playBtn.addEventListener('click', alternarPlay);
 prevBtn.addEventListener('click', musicaAnterior);
 nextBtn.addEventListener('click', proximaMusica);
 audio.addEventListener('ended', proximaMusica);
+
+// Adicione este trecho ao final do script.js existente
+
+// 12. REGISTRO DO SERVICE WORKER (PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((registration) => {
+        console.log('Service Worker registrado com sucesso:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('Falha ao registrar o Service Worker:', error);
+      });
+  });
+}
